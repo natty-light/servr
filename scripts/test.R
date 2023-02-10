@@ -1,3 +1,3 @@
-args = commandArgs(trailingOnly=TRUE)
+args <- commandArgs(trailingOnly = TRUE)
 print(args)
-cat(args[1], file="data.txt")
+cat(args[1], file = "data.txt")
