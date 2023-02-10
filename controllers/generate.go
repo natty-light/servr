@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"os/exec"
 	"serveR/utils"
 
@@ -15,23 +16,32 @@ type GenerateRequestBody struct {
 func GetGenerate(c *gin.Context) {
 
 	var request *GenerateRequestBody = &GenerateRequestBody{}
-	c.BindJSON(&request)
-
+	if err := c.BindJSON(request); err != nil {
+		c.AbortWithError(http.StatusBadGateway, err)
+		return
+	}
 	var id string = uuid.NewString()
-	utils.Write(request.Schools, id)
+	fileName, err := utils.Write(request.Schools, id)
+
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
 	ch := make(chan error)
 
+	var script string = `C:\Users\jagal\OneDrive\Desktop\serveR\scripts\test.R `
+
 	go func() {
-		cmd := exec.Command(`Rscript`, `C:\Users\jagal\OneDrive\Desktop\serveR\scripts\test.R`)
+		cmd := exec.Command(`Rscript`, script, fileName)
 		ch <- cmd.Run()
 	}()
 
-	err := <-ch
+	err = <-ch
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(http.StatusInternalServerError, "Error running R Script")
 	} else {
 		res := utils.Read()
-		c.JSON(200, res)
+		c.JSON(http.StatusAccepted, res)
 	}
 }

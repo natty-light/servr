@@ -1,1 +1,3 @@
-cat('it works! But with R', file="data.txt")
+args = commandArgs(trailingOnly=TRUE)
+print(args)
+cat(args[1], file="data.txt")
