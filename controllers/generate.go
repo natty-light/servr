@@ -11,7 +11,7 @@ func GetGenerate(c *gin.Context) {
 	ch := make(chan error)
 
 	go func() {
-		cmd := exec.Command(`Rscript`, `C:\Users\jagal\OneDrive\Desktop\serveR\r-script\test.R`)
+		cmd := exec.Command(`Rscript`, `C:\Users\jagal\OneDrive\Desktop\serveR\scripts\test.R`)
 		ch <- cmd.Run()
 	}()
 
