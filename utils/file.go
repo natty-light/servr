@@ -6,7 +6,7 @@ import (
 )
 
 func Read() string {
-	f, _ := os.Open(`C:\Users\jagal\OneDrive\Desktop\serveR\data.txt`)
+	f, _ := os.Open(`./data.txt`)
 	var line string
 	scanner := bufio.NewScanner(f)
 

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"os"
 	"os/exec"
 	"serveR/utils"
 
@@ -30,7 +31,7 @@ func GetGenerate(c *gin.Context) {
 
 	ch := make(chan error)
 
-	var script string = `C:\Users\jagal\OneDrive\Desktop\serveR\scripts\test.R `
+	var script string = `./scripts/test.R`
 
 	go func() {
 		cmd := exec.Command(`Rscript`, script, fileName)
@@ -44,4 +45,5 @@ func GetGenerate(c *gin.Context) {
 		res := utils.Read()
 		c.JSON(http.StatusAccepted, res)
 	}
+	os.Remove(fileName)
 }
