@@ -10,7 +10,9 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
+RUN Rscript ./scripts/install.R
 RUN go build 
 
 EXPOSE 3000
 CMD ["./serveR"]
+# CMD ["bash"]

@@ -38,9 +38,11 @@ func GetGenerate(c *gin.Context) {
 		ch <- cmd.Run()
 	}()
 
+	// Configure AWS S3 Here
+
 	err = <-ch
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "Error running R Script")
+		c.JSON(http.StatusInternalServerError, "Error running R Script"+err.Error())
 	} else {
 		res := utils.Read()
 		c.JSON(http.StatusAccepted, res)
