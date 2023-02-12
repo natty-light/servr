@@ -9,10 +9,11 @@ import (
 func main() {
 
 	var r *gin.Engine = gin.Default()
-	r.GET("/ping", controllers.PingHandler)
 
 	var api *gin.RouterGroup = r.Group("/api")
 	{
+		api.GET("/ping", controllers.PingHandler)
+
 		var generate *gin.RouterGroup = api.Group("/generate")
 		{
 			generate.GET("/", controllers.GetGenerate)

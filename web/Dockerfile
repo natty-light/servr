@@ -1,5 +1,13 @@
-FROM node:18
+FROM golang:1.20
 
-WORKDIR /usr/src/server
+WORKDIR /usr/src/web
 
-RUN yarn install
+COPY go.mod ./
+RUN go mod download && go mod verify
+
+COPY . .
+
+RUN go build 
+
+EXPOSE 5000
+CMD ["./web"]
