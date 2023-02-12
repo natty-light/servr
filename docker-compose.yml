@@ -1,0 +1,13 @@
+services:
+
+  reverseproxy:
+    image: reverseproxy
+    ports: 
+      - 8080:8080
+    restart: always
+
+  server:
+    depends_on:
+      - reverseproxy
+    image: serve-r
+    restart: always
