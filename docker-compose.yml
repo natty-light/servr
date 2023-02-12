@@ -1,0 +1,19 @@
+services:
+
+  reverseproxy:
+    image: reverseproxy
+    container_name: reverse-proxy
+    build:
+      context: ./reverseproxy
+    ports: 
+      - 8080:8080
+    restart: always
+
+  server:
+    depends_on:
+      - reverseproxy
+    image: generate
+    container_name: generate
+    build: 
+      context: ./generate
+    restart: always
