@@ -1,3 +1,5 @@
-FROM nginx:alpine
+FROM node:18
 
-COPY nginx.conf /etc/nginx/nginx.conf
+WORKDIR /usr/src/server
+
+RUN yarn install
