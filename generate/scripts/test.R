@@ -1,4 +1,4 @@
-library("jsonlite")
-args <- commandArgs(trailingOnly = TRUE)
-print(args)
-cat(args[1], file = "data.txt")
+library("rmarkdown")
+render(
+  "test_markdown.Rmd",
+)
