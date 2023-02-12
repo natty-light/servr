@@ -1,4 +1,4 @@
-module serveR
+module serveR/generate
 
 go 1.19
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"serveR/controllers"
+	"serveR/generate/controllers"
 
 	"github.com/gin-gonic/gin"
 )

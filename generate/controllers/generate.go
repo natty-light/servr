@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"serveR/utils"
+	"serveR/generate/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
