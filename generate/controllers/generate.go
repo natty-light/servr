@@ -26,7 +26,8 @@ func GetGenerate(c *gin.Context) {
 	}
 
 	var id string = uuid.NewString()
-	var outputFileName = id + ".pdf"
+	// var outputFileName = id + ".pdf"
+	var outputFileName = "data.txt"
 	fileName, err := utils.Write(request.Schools, id)
 
 	if err != nil {
@@ -54,8 +55,9 @@ func GetGenerate(c *gin.Context) {
 	}
 
 	// Create S3 UploadInput interface
+	var bucket = os.Getenv("AWS_BUCKET_NAME")
 	var input *s3manager.UploadInput = &s3manager.UploadInput{
-		Bucket: aws.String(os.Getenv("AWS_BUCKET_NAME")),
+		Bucket: aws.String(bucket),
 	}
 
 	// Await completion of R Script using <-ch blocking feature
@@ -69,6 +71,8 @@ func GetGenerate(c *gin.Context) {
 		file, err := os.Open(outputFileName)
 		if err != nil {
 			utils.AbortWithError(c, http.StatusInternalServerError, fmt.Sprintf("Error: Unable to open file %s \n", outputFileName), err)
+			os.Remove(outputFileName)
+			os.Remove(fileName)
 			return
 		}
 
@@ -80,7 +84,7 @@ func GetGenerate(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusAccepted, outputFileName)
+		c.JSON(http.StatusAccepted, utils.GenerateS3ObjectURL(bucket, outputFileName))
 	}
 	os.Remove(outputFileName)
 	os.Remove(fileName)

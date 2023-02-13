@@ -21,3 +21,7 @@ func CreateS3Uploader() (*s3manager.Uploader, error) {
 
 	return uploader, nil
 }
+
+func GenerateS3ObjectURL(bucket string, outputFileName string) string {
+	return fmt.Sprintf(`https://%s.s3.amazonaws.com/%s`, bucket, outputFileName)
+}
