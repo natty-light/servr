@@ -42,6 +42,8 @@ func GetGenerate(c *gin.Context) {
 	// Asynchronously run R Script
 	go func() {
 		cmd := exec.Command(`Rscript`, script, fileName)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		ch <- cmd.Run()
 	}()
 

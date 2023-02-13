@@ -8,5 +8,6 @@ import (
 
 func AbortWithError(c *gin.Context, code int, errMessage string, err error) {
 	fmt.Println(errMessage)
+	fmt.Println(err.Error())
 	c.AbortWithError(code, err)
 }
