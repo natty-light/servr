@@ -14,5 +14,9 @@ RUN Rscript ./scripts/install.R
 RUN go build 
 
 EXPOSE 3000
-CMD ["./serveR"]
+RUN source .env
+CMD ["./generate"]
 # CMD ["bash"]
+
+
+# docker build -t generate .

@@ -5,6 +5,12 @@ go 1.19
 require github.com/gin-gonic/gin v1.8.2
 
 require (
+	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+)
+
+require (
+	github.com/aws/aws-sdk-go v1.44.199
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
