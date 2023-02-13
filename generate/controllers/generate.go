@@ -46,6 +46,8 @@ func GetGenerate(c *gin.Context) {
 		stdout, stderr := cmd.CombinedOutput()
 		ch <- stderr
 		outch <- stdout
+		close(ch)
+		close(outch)
 	}()
 
 	// Initialize S3 Uploader
