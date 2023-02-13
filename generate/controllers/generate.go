@@ -26,8 +26,7 @@ func GetGenerate(c *gin.Context) {
 	}
 
 	var id string = uuid.NewString()
-	// var outputFileName = id + ".pdf"
-	var outputFileName = "data.txt"
+	var outputFileName = id + ".pdf"
 	fileName, err := utils.Write(request.Schools, id)
 
 	if err != nil {
