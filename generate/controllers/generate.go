@@ -66,7 +66,7 @@ func GetGenerate(c *gin.Context) {
 	} else {
 
 		// If we successfully run R Script, get the produced file
-		file, err := os.Open(fileName)
+		file, err := os.Open(outputFileName)
 		if err != nil {
 			utils.AbortWithError(c, http.StatusInternalServerError, fmt.Sprintf("Error: Unable to open file %s \n", outputFileName), err)
 			return
