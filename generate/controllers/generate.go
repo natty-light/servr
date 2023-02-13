@@ -36,15 +36,16 @@ func GetGenerate(c *gin.Context) {
 
 	// Set up channel to await R script completion
 	ch := make(chan error)
+	outch := make(chan []byte)
 
 	var script string = fmt.Sprintf(`./scripts/%s`, os.Getenv("R_SCRIPT_NAME"))
 
 	// Asynchronously run R Script
 	go func() {
 		cmd := exec.Command(`Rscript`, script, fileName)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		ch <- cmd.Run()
+		stdout, stderr := cmd.CombinedOutput()
+		ch <- stderr
+		outch <- stdout
 	}()
 
 	// Initialize S3 Uploader
@@ -63,8 +64,10 @@ func GetGenerate(c *gin.Context) {
 
 	// Await completion of R Script using <-ch blocking feature
 	err = <-ch
+	out := <-outch
 	if err != nil {
-		utils.AbortWithError(c, http.StatusInternalServerError, "Error: Failed to run R Script", err)
+		fmt.Println(string(out))
+		utils.AbortWithError(c, http.StatusInternalServerError, fmt.Sprintf("Error: Failed to run R Script with message %s", string(out)), err)
 		os.Remove(fileName)
 	} else {
 
