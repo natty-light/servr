@@ -26,7 +26,9 @@ func GetGenerate(c *gin.Context) {
 	}
 
 	var id string = uuid.NewString()
+	var outputFileName = id + ".pdf"
 	fileName, err := utils.Write(request.Schools, id)
+
 	if err != nil {
 		utils.AbortWithError(c, http.StatusInternalServerError, "Error: Unable to write to file system", err)
 		return
@@ -35,7 +37,7 @@ func GetGenerate(c *gin.Context) {
 	// Set up channel to await R script completion
 	ch := make(chan error)
 
-	var script string = `./scripts/test.R`
+	var script string = fmt.Sprintf(`./scripts/%s`, os.Getenv("R_SCRIPT_NAME"))
 
 	// Asynchronously run R Script
 	go func() {
@@ -47,6 +49,7 @@ func GetGenerate(c *gin.Context) {
 	uploader, err := utils.CreateS3Uploader()
 	if err != nil {
 		utils.AbortWithError(c, http.StatusInternalServerError, "Error: Unable to initialize S3 Uploader", err)
+		os.Remove(fileName)
 		return
 	}
 
@@ -58,10 +61,9 @@ func GetGenerate(c *gin.Context) {
 	// Await completion of R Script using <-ch blocking feature
 	err = <-ch
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "Error running R Script"+err.Error())
+		utils.AbortWithError(c, http.StatusInternalServerError, "Error: Failed to run R Script", err)
+		os.Remove(fileName)
 	} else {
-
-		var outputFileName = id + ".pdf"
 
 		// If we successfully run R Script, get the produced file
 		file, err := os.Open(fileName)
@@ -71,7 +73,7 @@ func GetGenerate(c *gin.Context) {
 		}
 
 		// create uploader
-		input.Body, input.Key = file, aws.String((fileName))
+		input.Body, input.Key = file, aws.String((outputFileName))
 		_, err = uploader.Upload(input)
 		if err != nil {
 			utils.AbortWithError(c, http.StatusInternalServerError, fmt.Sprintf("ERROR: Unable to upload file %s to S3 \n", outputFileName), err)
@@ -79,7 +81,7 @@ func GetGenerate(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusAccepted, outputFileName)
-		os.Remove(outputFileName)
 	}
+	os.Remove(outputFileName)
 	os.Remove(fileName)
 }
