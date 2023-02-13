@@ -9,11 +9,20 @@ services:
       - 8080:8080
     restart: always
 
-  server:
+  generate:
     depends_on:
       - reverseproxy
     image: generate
     container_name: generate
     build: 
       context: ./generate
+    restart: always
+
+  webportal:
+    depends_on:
+      - reverseproxy
+    image: webportal
+    container_name: web-portal
+    build:
+      context: ./web
     restart: always
