@@ -14,6 +14,7 @@ func main() {
 	{
 		api.GET("/ping", controllers.PingHandler)
 		api.GET("/login", controllers.HandleLogin)
+		api.GET("/refresh", controllers.HandleRefresh)
 		var generate *gin.RouterGroup = api.Group("/generate")
 		{
 			generate.GET("/", controllers.GetGenerate)

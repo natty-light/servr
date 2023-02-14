@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"serveR/generate/utils"
@@ -67,4 +68,29 @@ func HandleLogin(c *gin.Context) {
 
 	res.Name, res.Value, res.Expires = "token", tokenString, expirationTime.UnixMilli()
 	c.JSON(http.StatusAccepted, res)
+}
+
+func HandleRefresh(c *gin.Context) {
+
+}
+
+func CheckJWT(tokenString string) (bool, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return jwtKey, nil
+	})
+
+	if err != nil {
+		return false, err
+	}
+
+	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return true, nil
+	}
+
+	return false, fmt.Errorf("unable to process token")
 }
