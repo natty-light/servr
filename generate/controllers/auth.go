@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"serveR/generate/utils"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,7 +33,7 @@ func HandleLogin(c *gin.Context) {
 		return
 	}
 
-	token, err := utils.IssueJWT(creds.Username)
+	token, err := utils.CreateJWT(creds.Username)
 	if err != nil {
 		utils.AbortWithError(c, http.StatusInternalServerError, "Unable to produce signed JWT", err)
 		return
@@ -42,5 +43,19 @@ func HandleLogin(c *gin.Context) {
 }
 
 func HandleRefresh(c *gin.Context) {
+	_, claims, err := utils.GetToken(c)
+	if err != nil {
+		utils.AbortWithError(c, http.StatusBadRequest, "Unable to retrieve token", err)
+	}
 
+	if time.Until(claims.ExpiresAt.Time) < 30*time.Second {
+		utils.AbortWithError(c, http.StatusBadRequest, "Cannot refresh token with less than 30 seconds remaining", nil)
+		return
+	}
+
+	token, err := utils.CreateJWT(claims.Username)
+	if err != nil {
+		utils.AbortWithError(c, http.StatusInternalServerError, "Unable to generate new JWT", err)
+	}
+	c.JSON(http.StatusAccepted, token)
 }

@@ -23,7 +23,7 @@ type DestructuredToken struct {
 	Expires int64  `json:"expiry"`
 }
 
-func IssueJWT(username string) (*DestructuredToken, error) {
+func CreateJWT(username string) (*DestructuredToken, error) {
 
 	expirationTime := time.Now().Add(24 * time.Hour)
 
@@ -48,13 +48,26 @@ func IssueJWT(username string) (*DestructuredToken, error) {
 
 func CheckJWT(c *gin.Context) error {
 
+	token, _, err := GetToken(c)
+	if err != nil {
+		return err
+	}
+
+	if token.Valid {
+		return nil
+	}
+	return fmt.Errorf("unable to check JWT")
+}
+
+func GetToken(c *gin.Context) (*jwt.Token, *Claims, error) {
 	tokenString := c.Query("token")
 	if tokenString == "" {
 		headerValue := strings.Split(c.Request.Header.Get("token"), " ")
 		tokenString = headerValue[len(headerValue)-1]
 	}
 
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -62,12 +75,7 @@ func CheckJWT(c *gin.Context) error {
 	})
 
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
-
-	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return nil
-	}
-
-	return nil
+	return token, claims, nil
 }
