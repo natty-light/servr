@@ -21,6 +21,12 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+type ResponseBody struct {
+	Name    string `json:"name"`
+	Value   string `json:"value"`
+	Expires int64  `json:"expiry"`
+}
+
 var user = map[string]string{
 	os.Getenv("USER"): os.Getenv("PASS"),
 }
@@ -42,11 +48,27 @@ func HandleLogin(c *gin.Context) {
 		return
 	}
 
+	res, err := IssueJWT(c, creds.Username)
+	if err != nil {
+		utils.AbortWithError(c, http.StatusInternalServerError, "Unable to produce signed JWT", err)
+		return
+	}
+
+	c.JSON(http.StatusAccepted, res)
+}
+
+func HandleRefresh(c *gin.Context) {
+
+}
+
+func IssueJWT(c *gin.Context, username string) (*ResponseBody, error) {
+
 	expirationTime := time.Now().Add(24 * time.Hour)
+
 	// Create the JWT claims, which includes the username and expiry time
 	// you would like it to contain.
 	var claims *Claims = &Claims{
-		Username: creds.Username,
+		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -56,22 +78,11 @@ func HandleLogin(c *gin.Context) {
 
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
-		utils.AbortWithError(c, http.StatusInternalServerError, "Unable to produce signed JWT", err)
-		return
+		return nil, err
 	}
 
-	res := struct {
-		Name    string `json:"name"`
-		Value   string `json:"value"`
-		Expires int64  `json:"expiry"`
-	}{}
-
-	res.Name, res.Value, res.Expires = "token", tokenString, expirationTime.UnixMilli()
-	c.JSON(http.StatusAccepted, res)
-}
-
-func HandleRefresh(c *gin.Context) {
-
+	var res *ResponseBody = &ResponseBody{Name: "token", Value: tokenString, Expires: expirationTime.UnixMilli()}
+	return res, nil
 }
 
 func CheckJWT(tokenString string) (bool, error) {
