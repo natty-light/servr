@@ -2,11 +2,11 @@ package utils
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -46,9 +46,9 @@ func CreateJWT(username string) (*DestructuredToken, error) {
 	return res, err
 }
 
-func CheckJWT(c *gin.Context) error {
+func CheckJWT(r *http.Request) error {
 
-	token, _, err := GetToken(c)
+	token, _, err := GetToken(r)
 	if err != nil {
 		return err
 	}
@@ -59,12 +59,14 @@ func CheckJWT(c *gin.Context) error {
 	return fmt.Errorf("unable to check JWT")
 }
 
-func GetToken(c *gin.Context) (*jwt.Token, *Claims, error) {
-	tokenString := c.Query("token")
-	if tokenString == "" {
-		headerValue := strings.Split(c.Request.Header.Get("token"), " ")
-		tokenString = headerValue[len(headerValue)-1]
+func GetToken(r *http.Request) (*jwt.Token, *Claims, error) {
+	reqToken := r.Header.Get("Authorization")
+	splitToken := strings.Split(reqToken, "Bearer")
+	if len(splitToken) != 2 {
+		return nil, nil, fmt.Errorf("auth header in wrong format")
 	}
+
+	tokenString := strings.TrimSpace(splitToken[1])
 
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {

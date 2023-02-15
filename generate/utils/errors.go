@@ -1,9 +1,9 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
-
-	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type ErrResponse struct {
@@ -11,11 +11,17 @@ type ErrResponse struct {
 	Message string `json:"message"`
 }
 
-func AbortWithError(c *gin.Context, code int, errMessage string, err error) {
+func AbortWithError(w http.ResponseWriter, code int, errMessage string, err error) {
 	res := &ErrResponse{
 		Err:     err,
 		Message: errMessage,
 	}
 	fmt.Println(res)
-	c.AbortWithStatusJSON(code, &res)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(res)
+}
+
+func AbortWithStatus(w http.ResponseWriter, code int) {
+	w.WriteHeader(code)
 }

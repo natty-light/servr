@@ -1,12 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 	"serveR/generate/utils"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type Credentials struct {
@@ -18,44 +17,56 @@ var user = map[string]string{
 	os.Getenv("USER"): os.Getenv("PASS"),
 }
 
-func HandleLogin(c *gin.Context) {
-	var creds *Credentials
+func HandleLogin(w http.ResponseWriter, r *http.Request) {
+	var creds Credentials
 
-	if err := c.BindJSON(&creds); err != nil {
-		utils.AbortWithError(c, http.StatusBadRequest, "Error: Unable to log in", err)
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
+		utils.AbortWithError(w, http.StatusBadRequest, "Error: Unable to log in", err)
 		return
 	}
 
 	expectedPass, ok := user[creds.Username]
 
 	if !ok || expectedPass != creds.Password {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		utils.AbortWithStatus(w, http.StatusUnauthorized)
 		return
 	}
 
 	token, err := utils.CreateJWT(creds.Username)
 	if err != nil {
-		utils.AbortWithError(c, http.StatusInternalServerError, "Unable to produce signed JWT", err)
+		utils.AbortWithError(w, http.StatusInternalServerError, "Unable to produce signed JWT", err)
 		return
 	}
 
-	c.JSON(http.StatusAccepted, token)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(token)
 }
 
-func HandleRefresh(c *gin.Context) {
-	_, claims, err := utils.GetToken(c)
+func HandleRefresh(w http.ResponseWriter, r *http.Request) {
+	_, claims, err := utils.GetToken(r)
 	if err != nil {
-		utils.AbortWithError(c, http.StatusBadRequest, "Unable to retrieve token", err)
+		utils.AbortWithError(w, http.StatusBadRequest, "Unable to retrieve token", err)
 	}
 
 	if time.Until(claims.ExpiresAt.Time) < 30*time.Second {
-		utils.AbortWithError(c, http.StatusBadRequest, "Cannot refresh token with less than 30 seconds remaining", nil)
+		utils.AbortWithError(w, http.StatusBadRequest, "Cannot refresh token with less than 30 seconds remaining", nil)
 		return
 	}
 
 	token, err := utils.CreateJWT(claims.Username)
 	if err != nil {
-		utils.AbortWithError(c, http.StatusInternalServerError, "Unable to generate new JWT", err)
+		utils.AbortWithError(w, http.StatusInternalServerError, "Unable to generate new JWT", err)
 	}
-	c.JSON(http.StatusAccepted, token)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(token)
+}
+
+func HandleCheck(w http.ResponseWriter, r *http.Request) {
+	if err := utils.CheckJWT(r); err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
 }
