@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,19 +10,19 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type GenerateRequestBody struct {
-	Schools []string `json:"schools" binding:"required"`
+	Schools []string `json:"schools"`
 }
 
-func GetGenerate(c *gin.Context) {
+func GetGenerate(w http.ResponseWriter, r *http.Request) {
 
 	var request *GenerateRequestBody = &GenerateRequestBody{}
-	if err := c.BindJSON(request); err != nil {
-		utils.AbortWithError(c, http.StatusBadRequest, "Error: Unable to bind request", err)
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		utils.AbortWithError(w, http.StatusBadRequest, "Error: Unable to bind request", err)
 		return
 	}
 
@@ -30,7 +31,7 @@ func GetGenerate(c *gin.Context) {
 	fileName, err := utils.Write(request.Schools, id)
 
 	if err != nil {
-		utils.AbortWithError(c, http.StatusInternalServerError, "Error: Unable to write to file system", err)
+		utils.AbortWithError(w, http.StatusInternalServerError, "Error: Unable to write to file system", err)
 		return
 	}
 
@@ -53,7 +54,7 @@ func GetGenerate(c *gin.Context) {
 	// Initialize S3 Uploader
 	uploader, err := utils.CreateS3Uploader()
 	if err != nil {
-		utils.AbortWithError(c, http.StatusInternalServerError, "Error: Unable to initialize S3 Uploader", err)
+		utils.AbortWithError(w, http.StatusInternalServerError, "Error: Unable to initialize S3 Uploader", err)
 		os.Remove(fileName)
 		return
 	}
@@ -69,14 +70,14 @@ func GetGenerate(c *gin.Context) {
 	out := <-outch
 	if err != nil {
 		fmt.Println(string(out))
-		utils.AbortWithError(c, http.StatusInternalServerError, fmt.Sprintf("Error: Failed to run R Script with message %s", string(out)), err)
+		utils.AbortWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error: Failed to run R Script with message %s", string(out)), err)
 		os.Remove(fileName)
 	} else {
 
 		// If we successfully run R Script, get the produced file
 		file, err := os.Open(outputFileName)
 		if err != nil {
-			utils.AbortWithError(c, http.StatusInternalServerError, fmt.Sprintf("Error: Unable to open file %s \n", outputFileName), err)
+			utils.AbortWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error: Unable to open file %s \n", outputFileName), err)
 			os.Remove(outputFileName)
 			os.Remove(fileName)
 			return
@@ -86,11 +87,15 @@ func GetGenerate(c *gin.Context) {
 		input.Body, input.Key = file, aws.String((outputFileName))
 		_, err = uploader.Upload(input)
 		if err != nil {
-			utils.AbortWithError(c, http.StatusInternalServerError, fmt.Sprintf("ERROR: Unable to upload file %s to S3 \n", outputFileName), err)
+			utils.AbortWithError(w, http.StatusInternalServerError, fmt.Sprintf("ERROR: Unable to upload file %s to S3 \n", outputFileName), err)
 			return
 		}
 
-		c.JSON(http.StatusAccepted, utils.GenerateS3ObjectURL(bucket, outputFileName))
+		res := struct{ url string }{url: utils.GenerateS3ObjectURL(*input.Bucket, outputFileName)}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+		json.NewEncoder(w).Encode(res)
+
 	}
 	os.Remove(outputFileName)
 	os.Remove(fileName)
