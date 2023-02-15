@@ -62,3 +62,11 @@ func HandleRefresh(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(token)
 }
+
+func HandleCheck(w http.ResponseWriter, r *http.Request) {
+	if err := utils.CheckJWT(r); err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
+}
