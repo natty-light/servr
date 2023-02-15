@@ -17,9 +17,13 @@ type GenerateRequestBody struct {
 	Schools []string `json:"schools"`
 }
 
+type GenerateResponseBody struct {
+	Url string `json:"url"`
+}
+
 func GetGenerate(w http.ResponseWriter, r *http.Request) {
 
-	var request *GenerateRequestBody = &GenerateRequestBody{}
+	request := GenerateRequestBody{}
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		utils.AbortWithError(w, http.StatusBadRequest, "Error: Unable to bind request", err)
@@ -91,11 +95,10 @@ func GetGenerate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		res := struct{ url string }{url: utils.GenerateS3ObjectURL(*input.Bucket, outputFileName)}
+		res := GenerateResponseBody{Url: utils.GenerateS3ObjectURL(*input.Bucket, outputFileName)}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 		json.NewEncoder(w).Encode(res)
-
 	}
 	os.Remove(outputFileName)
 	os.Remove(fileName)

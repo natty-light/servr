@@ -18,9 +18,9 @@ var user = map[string]string{
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	var creds *Credentials
+	var creds Credentials
 
-	if err := json.NewDecoder(r.Body).Decode(creds); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
 		utils.AbortWithError(w, http.StatusBadRequest, "Error: Unable to log in", err)
 		return
 	}
