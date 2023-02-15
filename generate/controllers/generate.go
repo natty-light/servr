@@ -23,6 +23,11 @@ type GenerateResponseBody struct {
 
 func GetGenerate(w http.ResponseWriter, r *http.Request) {
 
+	if err := utils.CheckJWT(r); err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	request := GenerateRequestBody{}
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
