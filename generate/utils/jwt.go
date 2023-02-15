@@ -56,7 +56,7 @@ func CheckJWT(r *http.Request) error {
 	if token.Valid {
 		return nil
 	}
-	return fmt.Errorf("unable to check JWT")
+	return fmt.Errorf("token invalid")
 }
 
 func GetToken(r *http.Request) (*jwt.Token, *Claims, error) {
