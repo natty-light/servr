@@ -3,7 +3,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { _ping } from './+page.server';
+	import { _ping } from './+page';
 
   onMount( async () => {
     const res = await _ping();

@@ -9,13 +9,13 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-  import { login } from './+page.server';
+  import { _login } from './+page';
   import styles from './login.module.css';
 	import { loggedIn, token } from '../../stores';
   let username: string, password: string;
 
   const handleLogin =async () => {
-    const destructuredToken = await login(username, password);
+    const destructuredToken = await _login(username, password);
 
     if (destructuredToken) {
       token.set(destructuredToken);

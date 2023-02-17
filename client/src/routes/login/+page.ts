@@ -1,7 +1,7 @@
 import type { destructuredToken } from '../../types';
 
-export const login = async (user: string, pass: string): Promise<destructuredToken | null> => {
-  const apiResponse = await fetch(`http://generate:3000/api/login`, {
+export const _login = async (user: string, pass: string): Promise<destructuredToken | null> => {
+  const apiResponse = await fetch(`/api/login`, {
     method: 'POST',
     body: JSON.stringify({
       username: user,
