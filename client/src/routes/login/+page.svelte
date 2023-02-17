@@ -17,9 +17,24 @@
 	};
 </script>
 
-<div>
-	<h1>Login Form</h1>
-	<input type="text" bind:value={username} required={true} />
-	<input type="password" bind:value={password} required={true} />
-	<button on:click={handleLogin}> submit </button>
+<div class="flex flex-col items-center">
+	<h1 class="text-2xl">
+    Login Form
+  </h1>
+	<input 
+    class="border-2 m-2"
+    type="text"
+    bind:value={username}
+    required={true} />
+	<input
+    class="border-2 m-2"
+    type="password"
+    bind:value={password}
+    required={true} />
+	<button
+    class="border-2 rounded-sm" 
+    on:click={handleLogin}
+    >
+    submit 
+  </button>
 </div>
