@@ -22,7 +22,7 @@ type GenerateResponseBody struct {
 }
 
 func GetGenerate(w http.ResponseWriter, r *http.Request) {
-
+	utils.EnableCors(&w)
 	if err := utils.CheckJWT(r); err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

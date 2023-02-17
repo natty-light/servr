@@ -12,6 +12,7 @@ type ErrResponse struct {
 }
 
 func AbortWithError(w http.ResponseWriter, code int, errMessage string, err error) {
+	EnableCors(&w)
 	res := &ErrResponse{
 		Err:     err,
 		Message: errMessage,
