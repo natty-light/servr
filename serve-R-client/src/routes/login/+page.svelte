@@ -1,4 +1,4 @@
-<div>
+<div class={styles.main}>
   <h1> Login Form</h1>
   <input type="text" bind:value={username} required={true}> 
   <input type="password" bind:value={password} required={true}>
@@ -8,16 +8,22 @@
 </div>
 
 <script lang="ts">
+  import { setContext } from 'svelte';
+	import { goto } from '$app/navigation';
   import type { loginResponse } from '../../types';
+  import styles from './login.module.css';
+	import { loggedIn, token } from '../../stores';
   let username: string, password: string;
 
   const handleLogin =async () => {
-    const token = await login(username, password);
+    const destructuredToken = await login(username, password);
 
-    if (token) {
-      console.log(token);
+    if (destructuredToken) {
+      token.set(destructuredToken);
+      loggedIn.set(true);
+      goto('/submit');
     } else {
-      console.log("Unable to log in");
+      window.alert('Unable to log in');
     }
   }
 
