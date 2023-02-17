@@ -8,7 +8,6 @@
   import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { loggedIn, token } from '../../stores';
-  import type { loginResponse } from '../../types';
   import styles from './submit.module.css';
 
   onMount( () => {

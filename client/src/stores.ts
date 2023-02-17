@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-import type { loginResponse } from './types';
+import type { destructuredToken } from './types';
 
 export const loggedIn = writable<boolean>(false);
 
-export const token = writable<loginResponse>(undefined);
+export const token = writable<destructuredToken>(undefined);

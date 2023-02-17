@@ -8,9 +8,8 @@
 </div>
 
 <script lang="ts">
-  import { setContext } from 'svelte';
 	import { goto } from '$app/navigation';
-  import type { loginResponse } from '../../types';
+  import { login } from './+page.server';
   import styles from './login.module.css';
 	import { loggedIn, token } from '../../stores';
   let username: string, password: string;
@@ -27,18 +26,4 @@
     }
   }
 
-  export const login = async (user: string, pass: string): Promise<loginResponse | null> => {
-    const apiResponse = await fetch('http://localhost:3000/api/login', {
-      method: 'POST',
-      body: JSON.stringify({
-        username: user,
-        password: pass
-      })
-    })
-    if (apiResponse.ok) {
-      const response: loginResponse = await apiResponse.json();
-      return response;
-    }
-    return null;
-  }
 </script>

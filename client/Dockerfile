@@ -6,6 +6,6 @@ COPY . .
 
 RUN yarn install && yarn build
 
-EXPOSE 5173
+EXPOSE 5000
 
-CMD [ ]
+CMD [ "node", "build/index.js" ]
