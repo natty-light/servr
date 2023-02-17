@@ -18,6 +18,7 @@ var user = map[string]string{
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
+	utils.EnableCors(&w)
 	var creds Credentials
 
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
@@ -37,13 +38,13 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		utils.AbortWithError(w, http.StatusInternalServerError, "Unable to produce signed JWT", err)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(token)
 }
 
 func HandleRefresh(w http.ResponseWriter, r *http.Request) {
+	utils.EnableCors(&w)
 	_, claims, err := utils.GetToken(r)
 	if err != nil {
 		utils.AbortWithError(w, http.StatusBadRequest, "Unable to retrieve token", err)
@@ -58,12 +59,14 @@ func HandleRefresh(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.AbortWithError(w, http.StatusInternalServerError, "Unable to generate new JWT", err)
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(token)
 }
 
 func HandleCheck(w http.ResponseWriter, r *http.Request) {
+	utils.EnableCors(&w)
 	if err := utils.CheckJWT(r); err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

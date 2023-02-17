@@ -22,6 +22,7 @@ type GenerateResponseBody struct {
 }
 
 func GetGenerate(w http.ResponseWriter, r *http.Request) {
+	utils.EnableCors(&w)
 
 	if err := utils.CheckJWT(r); err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -101,6 +102,7 @@ func GetGenerate(w http.ResponseWriter, r *http.Request) {
 		}
 
 		res := GenerateResponseBody{Url: utils.GenerateS3ObjectURL(*input.Bucket, outputFileName)}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 		json.NewEncoder(w).Encode(res)

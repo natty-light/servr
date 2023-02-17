@@ -12,11 +12,13 @@ type ErrResponse struct {
 }
 
 func AbortWithError(w http.ResponseWriter, code int, errMessage string, err error) {
+	EnableCors(&w)
 	res := &ErrResponse{
 		Err:     err,
 		Message: errMessage,
 	}
 	fmt.Println(res)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(res)
