@@ -1,5 +1,5 @@
 export type destructuredToken = {
-  name: string;
-  value: string;
-  expiry: number;
+	name: string;
+	value: string;
+	expiry: number;
 };
