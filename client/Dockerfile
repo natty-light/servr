@@ -8,4 +8,4 @@ RUN yarn install && yarn build
 
 EXPOSE 5173
 
-CMD [ "yarn", "dev" ]
+CMD [ ]
