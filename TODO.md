@@ -1,6 +1,7 @@
 ### Todo
 - Look into setting JWT as a cookie
 - Add postgres DB (and probably GORM) to store what reports users have already requested
+- turn cors handling into middleware: `http.Handle('/endpoint', corsHandler(endPointHandler))
 
 
 #### Important

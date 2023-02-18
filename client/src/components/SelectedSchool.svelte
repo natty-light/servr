@@ -10,7 +10,7 @@
   }
 </script>
 
-<div class="flex flex-row content-between">
+<div class="flex flex-row content-between space-x-8">
   <div>
     {school.text}
   </div>

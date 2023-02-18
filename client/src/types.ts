@@ -17,3 +17,7 @@ export type selectDetail = {
 export type removeDetail = {
 	option: schoolOption;
 }
+
+export type generateResponse = {
+	url: string;
+}

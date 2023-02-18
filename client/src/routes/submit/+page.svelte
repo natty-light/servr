@@ -56,7 +56,7 @@
 			Your selected schools
 		</h1>
 		{#if selected.length > 0 }			
-		<div class="border-2 rounded-md pl-16 pr-16 content-around">
+		<div class="border-2 rounded-md pl-4 pr-4 content-around">
 			{#each selected as school, i }
 			<SelectedSchool
 			school={school}
