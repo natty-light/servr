@@ -3,3 +3,8 @@ export type destructuredToken = {
 	value: string;
 	expiry: number;
 };
+
+export type selectableData = {
+	text: string;
+	attrs: string[];
+}
