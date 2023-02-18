@@ -89,7 +89,6 @@ func HandleGenerate(w http.ResponseWriter, r *http.Request) {
 			utils.AbortWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error: Failed to run R Script with message %s", string(out)), err)
 			os.Remove(fileName)
 		} else {
-			outputFileName = "data.txt"
 			// If we successfully run R Script, get the produced file
 			file, err := os.Open(outputFileName)
 			if err != nil {
