@@ -1,3 +1,5 @@
+<!-- Credit to https://svelte.dev/repl/864898d1defc44538db7cb2ee9a5ac97?version=3.25.0 -->
+
 <style>
 	div {
 		--width: 200px;
@@ -57,7 +59,7 @@
 
 	let selection = 0;
 	let visibles: number[] = [];
-	data.forEach( (datum, i) => visibles.push(i));
+	data.forEach( (_datum, i) => visibles.push(i));
 	let focused = false;
 	let hover = false;
 	
