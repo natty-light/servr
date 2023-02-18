@@ -4,7 +4,16 @@ export type destructuredToken = {
 	expiry: number;
 };
 
-export type selectableData = {
+export type schoolOption = {
 	text: string;
 	attrs: string[];
+}
+
+export type selectDetail = {
+	index: number;
+	option: schoolOption;
+}
+
+export type removeDetail = {
+	option: schoolOption;
 }

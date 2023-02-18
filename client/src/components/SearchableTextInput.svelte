@@ -47,24 +47,36 @@
 </style>
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { selectableData } from '../types';
+	import type { selectDetail, schoolOption } from '../types';
 
-	export let data: selectableData[] = [],
+	// Define props
+	export let data: schoolOption[] = [],
 		placeholder = "",
 		val = "",
 		caseSensitive = false,
 		locale = "en";
 
 	const dispatch = createEventDispatcher();
+	
+	const handleSelection = (i: number) => {
+		const detail: selectDetail = {
+			index: i,
+			option: data[i] 
+		}
+		dispatch("select", detail);
+	}
 
+	// Define states
 	let selection = 0;
 	let visibles: number[] = [];
-	data.forEach( (_datum, i) => visibles.push(i));
 	let focused = false;
 	let hover = false;
+
+	data.forEach( (_datum, i) => visibles.push(i));
+
 	
 
-	function inputAction(e: { key: any; }) {
+	const inputAction = (e: { key: string; }) => {
 		switch (e.key) {
 			case "ArrowUp":
 				// move up
@@ -76,48 +88,36 @@
 				break;
 			case "Enter":
 				// move down
-				handleSelection(visibles[selection], "keyboard");
+				handleSelection(visibles[selection]);
 				break;
 		
 			default:
 				// search
 				let arr: number[] = [];
 				data.forEach( (datum, i) => {
-					if (
-							(caseSensitive && datum.text.includes(val)) ||
-							(!caseSensitive && datum.text.toLocaleLowerCase(locale)
-							 															.includes(val.toLocaleLowerCase(locale)))) {
+					if ((caseSensitive && datum.text.includes(val)) || (!caseSensitive && datum.text.toLocaleLowerCase(locale).includes(val.toLocaleLowerCase(locale)))) {
 						arr.push(i);
 					}
-				}
-				)
+				})
 				visibles = arr;
 				selection = 0;
 				break;
 		}
 	}
-	function handleSelection(i: number, by: string) {
-		dispatch("select", {
-			i: Number(i),
-			data: data[i],
-			by,
-		});
-	}
-
 </script>
 
 <div
 	class:expand={focused || hover}
 	class="searchable-text-input-container"
-	on:mouseover="{() => hover=true}"
-	on:mouseout="{() => hover=false}"
-	on:focus="{() => hover=true}"
+	on:mouseover={() => hover=true}
+	on:mouseout={() => hover=false}
+	on:focus={() => hover=true}
   on:blur={() => hover=false}>
 	<input
 		class="searchable-text-input-input"
 		{placeholder}
-		on:focus="{()=>focused = true}"
-		on:blur="{()=>focused = false}"
+		on:focus={()=>focused = true}
+		on:blur={()=>focused = false}
 		bind:value={val}
 		on:keyup={inputAction}
 		type="text">
@@ -126,7 +126,7 @@
 		{#each data as {text, attrs}, i}
 			<li
 				class="searchable-text-input-li"
-				on:click="{(e) => handleSelection(i, "mouse")}"
+				on:click="{(e) => handleSelection(i)}"
 				on:mouseover="{() => selection=i}"
         on:focus="{() => selection=i}"
 				class:indicator={i==visibles[selection]}
