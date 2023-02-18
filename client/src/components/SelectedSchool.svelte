@@ -10,7 +10,6 @@
   }
 </script>
 
-
 <div class="flex flex-row content-between">
   <div>
     {school.text}
@@ -18,4 +17,4 @@
   <button on:click={(_e) => handleRemoval(school)}>
     x
   </button>
-</div>
+</div> 

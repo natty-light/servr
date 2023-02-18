@@ -31,9 +31,6 @@
 		},
 	];
 	let selected: schoolOption[] = [];
-	// Fix this to append to array of selected schools
-	// this should trigger pushing onto an array which is passed as props
-	// to a component that allows for removing. That means the list will have to be a context
 	const handleSelect = (event: { detail: selectDetail; }) => {
 		const school = event.detail.option;
 		selected = [...selected, school]
@@ -45,27 +42,38 @@
 		selectableDataOptions = [...selectableDataOptions, school];
 		selected = selected.filter((selectedSchool) => school.text != selectedSchool.text);
 	}
+
+	const handleSubmit = (e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement;}) => {
+		e.preventDefault()
+		selectedSchools.set(selected);
+		goto('/view')
+	}
 </script>
 
 <div class="flex flex-row">
-	<div class="flex flex-col content-between w-6/12">
+	<div class="flex flex-col content-between w-6/12 items-center">
+		<h1 class="text-lg mb-8">
+			Your selected schools
+		</h1>
 		{#if selected.length > 0 }			
+		<div class="border-2 rounded-md pl-16 pr-16 content-around">
 			{#each selected as school, i }
-				<SelectedSchool
-					school={school}
-					on:remove={handleRemove}
-					/>
+			<SelectedSchool
+			school={school}
+			on:remove={handleRemove}
+			/>
 			{/each}
+		</div>
 		{/if}
 	</div>
-	<div class="flex flex-col items-center w-6/12">
-		<h1>Select your schools</h1>
+	<div class="flex flex-col content-between items-center w-6/12">
+		<h1 class="text-lg mb-8">Select your schools</h1>
 		<SearchableTextInput
 		placeholder="Search..."
 		data={selectableDataOptions}
 		on:select={handleSelect} />
 		<div class="mt-40">
-			<button>
+			<button on:click={(e) => handleSubmit(e)}>
 				Submit Selection
 			</button>
 		</div>
