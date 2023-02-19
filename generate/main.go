@@ -14,7 +14,7 @@ func main() {
 	http.HandleFunc("/api/refresh", controllers.HandleRefresh)
 	http.HandleFunc("/api/checktoken", controllers.HandleCheck)
 
-	http.HandleFunc("/api/generate", controllers.GetGenerate)
+	http.HandleFunc("/api/generate", controllers.HandleGenerate)
 
 	fmt.Println("Listening on port 3000")
 	log.Fatal(http.ListenAndServe(":3000", nil))

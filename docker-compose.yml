@@ -20,11 +20,13 @@ services:
       context: ./generate
     restart: always
 
-  webportal:
+  client:  
     depends_on:
       - reverseproxy
-    image: webportal
-    container_name: web-portal
+    image: client
+    env_file:
+      - .env
+    container_name: client
     build:
-      context: ./web
+      context: ./client
     restart: always

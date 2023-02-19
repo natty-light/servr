@@ -38,7 +38,6 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		utils.AbortWithError(w, http.StatusInternalServerError, "Unable to produce signed JWT", err)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(token)
@@ -60,6 +59,7 @@ func HandleRefresh(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.AbortWithError(w, http.StatusInternalServerError, "Unable to generate new JWT", err)
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(token)
