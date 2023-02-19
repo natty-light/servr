@@ -78,7 +78,8 @@ func HandleGenerate(w http.ResponseWriter, r *http.Request) {
 		// Create S3 UploadInput interface
 		var bucket = os.Getenv("AWS_BUCKET_NAME")
 		var input *s3manager.UploadInput = &s3manager.UploadInput{
-			Bucket: aws.String(bucket),
+			Bucket:      aws.String(bucket),
+			ContentType: aws.String("application/pdf"),
 		}
 
 		// Await completion of R Script using <-ch blocking feature

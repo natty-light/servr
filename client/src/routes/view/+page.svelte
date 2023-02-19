@@ -18,15 +18,14 @@
       const tokenString = $token.value;
       response = await _submitGenerateRequest(schools, tokenString);
       ready = true;
-      console.log(response)
     }
 		
   })
 
 </script>
 
-<div class="w-full h-full">
+<div class="w-full h-screen">
   {#if ready}
-    <iframe title="report" src={response.url}/>
+    <object title="report" data={response.url} type='application/pdf' class="w-full h-full"/>
   {/if}
 </div>
