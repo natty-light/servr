@@ -11,7 +11,7 @@ export const _postGenerateRequest = async (request: generateRequest) => {
   // Turn stream into blob
   const response = await res.arrayBuffer()
   const arr = new Uint8Array(response)
-  return await new Blob([arr], {type: 'application/pdf'})
+  return new Blob([arr], {type: 'application/pdf'})
 };
 
 const prepareRequestBody = (schools: schoolOption[]) => {
