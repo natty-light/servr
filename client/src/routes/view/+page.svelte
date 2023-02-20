@@ -2,10 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { loggedIn, selectedSchools, token } from '../../stores';
-	import type { generateResponse } from '../../types';
-	import { _submitGenerateRequest } from './+page';
+	import type { generateRequest } from '../../types';
 
-  let response: generateResponse;
+  let url: string
   let ready: boolean = false;
 
   onMount( async () => {
@@ -16,7 +15,12 @@
 		} else {
       const schools = $selectedSchools;
       const tokenString = $token.value;
-      response = await _submitGenerateRequest(schools, tokenString);
+      const generateRequestBody: generateRequest = {schools, tokenString};
+      const response = await fetch('/server/view', {
+        method: 'POST',
+        body: JSON.stringify(generateRequestBody),
+      })
+      url = URL.createObjectURL(await response.blob())
       ready = true;
     }
 		
@@ -26,6 +30,6 @@
 
 <div class="w-full h-screen">
   {#if ready}
-    <object title="report" data={response.url} type='application/pdf' class="w-full h-full"/>
+    <object title="report" data={url} type='application/pdf' class="w-full h-full"/>
   {/if}
 </div>

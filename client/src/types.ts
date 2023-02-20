@@ -18,6 +18,11 @@ export type removeDetail = {
 	option: schoolOption;
 }
 
+export type generateRequest = {
+	schools: schoolOption[];
+	tokenString: string;
+}
+
 export type generateResponse = {
 	url: string;
 }
