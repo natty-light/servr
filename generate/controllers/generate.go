@@ -23,7 +23,6 @@ type GenerateResponseBody struct {
 }
 
 func HandleGenerate(w http.ResponseWriter, r *http.Request) {
-	utils.EnableCors(&w)
 	switch r.Method {
 	case "OPTIONS":
 		fmt.Println("Handling Preflight Check")
