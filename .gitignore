@@ -17,3 +17,4 @@
 *.csv
 data.txt
 .env
+*.pdf

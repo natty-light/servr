@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
@@ -91,6 +92,7 @@ func HandleGenerate(w http.ResponseWriter, r *http.Request) {
 			os.Remove(fileName)
 		} else {
 			// If we successfully run R Script, get the produced file
+			// outputFileName = "test.pdf"
 			file, err := os.Open(outputFileName)
 			if err != nil {
 				utils.AbortWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error: Unable to open file %s \n", outputFileName), err)
@@ -107,11 +109,14 @@ func HandleGenerate(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			res := GenerateResponseBody{Url: utils.GenerateS3ObjectURL(*input.Bucket, outputFileName)}
-
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusAccepted)
-			json.NewEncoder(w).Encode(res)
+			if _, err = io.Copy(w, file); err != nil {
+				utils.AbortWithError(w, http.StatusInternalServerError, "Error: Unable to process file into response stream", err)
+				return
+			}
+			//res := GenerateResponseBody{Url: utils.GenerateS3ObjectURL(*input.Bucket, outputFileName)}
+			// w.WriteHeader(http.StatusAccepted)
+			//json.NewEncoder(w).Encode(res)
 		}
 		os.Remove(outputFileName)
 		os.Remove(fileName)

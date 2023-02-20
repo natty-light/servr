@@ -1,19 +1,18 @@
-import type { generateResponse, schoolOption } from '../../types';
+import type { generateRequest, schoolOption } from '../../types';
 
-
-export const _submitGenerateRequest = async (schools: schoolOption[], tokenString: string) => {
-  const res = await fetch(`/api/generate`, {
+export const _postGenerateRequest = async (request: generateRequest) => {
+  const res = await fetch(`http://localhost:3000/api/generate`, {
     method: 'POST',
-    body: prepareRequestBody(schools),
+    body: prepareRequestBody(request.schools),
     headers: {
-      'Authorization': `Bearer ${tokenString}`
+      'Authorization': `Bearer ${request.tokenString}`
     }
   })
 
-  const response: generateResponse = await res.json()
-  console.log(response)
-  return response
-}
+  // Turn stream into blob
+  return await res.blob()
+
+};
 
 const prepareRequestBody = (schools: schoolOption[]) => {
   const schoolArray: string[] = schools.map( (school) => school.text)
