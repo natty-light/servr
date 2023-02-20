@@ -13,8 +13,7 @@ export const POST = (async ({request}) => {
 
   // Turn stream into blob
   const response = await res.arrayBuffer()
-  const base64str = Buffer.from(response).toString('base64');
-  const binaryString = atob(base64str);
+  const binaryString = Buffer.from(response).toString('binary');
   const bytes = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);

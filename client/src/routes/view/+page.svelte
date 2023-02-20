@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { loggedIn, selectedSchools, token } from '../../stores';
 	import type { generateRequest } from '../../types';
+	import { _postGenerateRequest } from './+page';
 
   let url: string
   let ready: boolean = false;
@@ -16,11 +17,13 @@
       const schools = $selectedSchools;
       const tokenString = $token.value;
       const generateRequestBody: generateRequest = {schools, tokenString};
-      const response = await fetch('/server/view', {
-        method: 'POST',
-        body: JSON.stringify(generateRequestBody),
-      })
-      url = URL.createObjectURL(await response.blob())
+      const reponse = await _postGenerateRequest(generateRequestBody);
+      url = URL.createObjectURL(reponse);
+      // const response = await fetch('/server/view', {
+      //   method: 'POST',
+      //   body: JSON.stringify(generateRequestBody),
+      // })
+      // url = URL.createObjectURL(await response.blob())
       ready = true;
     }
 		
