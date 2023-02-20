@@ -8,10 +8,10 @@ export const _postGenerateRequest = async (request: generateRequest) => {
       'Authorization': `Bearer ${request.tokenString}`
     }
   })
-
   // Turn stream into blob
-  return await res.blob()
-
+  const response = await res.arrayBuffer()
+  const arr = new Uint8Array(response)
+  return new Blob([arr], {type: 'application/pdf'})
 };
 
 const prepareRequestBody = (schools: schoolOption[]) => {
