@@ -1,11 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
+import { generatePrefix } from '../../../globals';
 import type { generateRequest, schoolOption } from '../../../types';
 
 // This file and its functions are no longer necessary but I am opting to keep the example of
 // how server side code in sveltekit works
 export const POST = (async ({request}) => {
   const req: generateRequest = await request.json();
-  const res = await fetch(`http://localhost:3000/api/generate`, {
+  const res = await fetch(`${generatePrefix}/api/generate`, {
     method: 'POST',
     body: prepareRequestBody(req.schools),
     headers: {

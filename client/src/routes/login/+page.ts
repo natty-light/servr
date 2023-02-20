@@ -1,7 +1,8 @@
+import { generatePrefix } from '../../globals';
 import type { destructuredToken } from '../../types';
 
 export const _login = async (user: string, pass: string): Promise<destructuredToken | null> => {
-	const apiResponse = await fetch(`http://localhost:3000/api/login`, {
+	const apiResponse = await fetch(`${generatePrefix}/api/login`, {
 		method: 'POST',
 		body: JSON.stringify({
 			username: user,

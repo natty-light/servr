@@ -1,7 +1,8 @@
+import { generatePrefix } from '../../globals';
 import type { generateRequest, schoolOption } from '../../types';
 
 export const _postGenerateRequest = async (request: generateRequest) => {
-  const res = await fetch(`http://localhost:3000/api/generate`, {
+  const res = await fetch(`${generatePrefix}/api/generate`, {
     method: 'POST',
     body: prepareRequestBody(request.schools),
     headers: {
