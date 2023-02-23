@@ -1,7 +1,7 @@
 ### Todo
 - Look into setting JWT as a cookie
 - Add postgres DB (and probably GORM) to store what reports users have already requested
-- turn cors handling into middleware: `http.Handle('/endpoint', corsHandler(endPointHandler))
+- Turn JWT into middleware instead of doing it in the handler
 - Verify if new server side fetch request and buffer->blob handling allows for hiding the generate API behind the nginx container and that it doesnt ruin the /api/login endpoint
 
 
